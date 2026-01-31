@@ -6,6 +6,7 @@ import { computeHistogram, computeSessionsAndStats } from './lib/mockData'
 import { Readonly, Select } from './components/FormControls'
 import HistogramChart from './components/HistogramChart'
 import { realSeries } from './lib/mockData'
+import { resolveErrorMessage } from './lib/errorHandling'
 
 export default function App() {
   const [error, setError] = useState('')
@@ -33,8 +34,13 @@ export default function App() {
       const points = await realSeries({ from: rangeA.from, to: rangeA.to, base: baseA, quote: quoteA })
       const out = computeSessionsAndStats(points)
       setResultA(out)
-    } catch {
-      setError('Unable to run the analysis. Please try again later.')
+    } catch (err) {
+      const message = resolveErrorMessage(err)
+      if (message) {
+        setError(message)
+      } else {
+        throw err
+      }
     } finally {
       setLoadingA(false)
     }
@@ -48,8 +54,13 @@ export default function App() {
       const points = await realSeries({ from: rangeB.from, to: rangeB.to, base: baseB, quote: quoteB })
       const out = computeHistogram(points)
       setHist(out)
-    } catch {
-      setError('Unable to run the analysis. Please try again later.')
+    } catch (err) {
+      const message = resolveErrorMessage(err)
+      if (message) {
+        setError(message)
+      } else {
+        throw err
+      }
     } finally {
       setLoadingB(false)
     }
