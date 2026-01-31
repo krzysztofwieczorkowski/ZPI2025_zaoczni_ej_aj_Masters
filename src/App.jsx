@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { CURRENCIES, PERIODS, GRANULARITIES } from './lib/constants'
 import { rangeFromPeriod, rangeForGranularity } from './lib/dateRange'
 import { to4 } from './lib/math'
-import { computeHistogram, computeSessionsAndStats } from './lib/mockData'
+import { computeHistogram, computeSessionsAndStats, REQUEST_TIMEOUT_MESSAGE } from './lib/mockData'
 import { Readonly, Select } from './components/FormControls'
 import HistogramChart from './components/HistogramChart'
 import { realSeries } from './lib/mockData'
@@ -33,8 +33,12 @@ export default function App() {
       const points = await realSeries({ from: rangeA.from, to: rangeA.to, base: baseA, quote: quoteA })
       const out = computeSessionsAndStats(points)
       setResultA(out)
-    } catch {
-      setError('Unable to run the analysis. Please try again later.')
+    } catch (err) {
+      if (err?.message === REQUEST_TIMEOUT_MESSAGE) {
+        setError(REQUEST_TIMEOUT_MESSAGE)
+      } else {
+        setError('Unable to run the analysis. Please try again later.')
+      }
     } finally {
       setLoadingA(false)
     }
@@ -48,8 +52,12 @@ export default function App() {
       const points = await realSeries({ from: rangeB.from, to: rangeB.to, base: baseB, quote: quoteB })
       const out = computeHistogram(points)
       setHist(out)
-    } catch {
-      setError('Unable to run the analysis. Please try again later.')
+    } catch (err) {
+      if (err?.message === REQUEST_TIMEOUT_MESSAGE) {
+        setError(REQUEST_TIMEOUT_MESSAGE)
+      } else {
+        setError('Unable to run the analysis. Please try again later.')
+      }
     } finally {
       setLoadingB(false)
     }
