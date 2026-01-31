@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { realSeries, REQUEST_TIMEOUT_MESSAGE } from './mockData'
+import { realSeries, REQUEST_TIMEOUT_MESSAGE } from '../lib/mockData'
 
 describe('realSeries timeout', () => {
   const originalFetch = global.fetch

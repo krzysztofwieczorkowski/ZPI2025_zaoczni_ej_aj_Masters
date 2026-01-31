@@ -6,6 +6,7 @@ import { computeHistogram, computeSessionsAndStats, REQUEST_TIMEOUT_MESSAGE } fr
 import { Readonly, Select } from './components/FormControls'
 import HistogramChart from './components/HistogramChart'
 import { realSeries } from './lib/mockData'
+import { resolveErrorMessage } from './lib/errorHandling'
 
 export default function App() {
   const [error, setError] = useState('')
@@ -34,10 +35,11 @@ export default function App() {
       const out = computeSessionsAndStats(points)
       setResultA(out)
     } catch (err) {
-      if (err?.message === REQUEST_TIMEOUT_MESSAGE) {
-        setError(REQUEST_TIMEOUT_MESSAGE)
+      const message = resolveErrorMessage(err)
+      if (message) {
+        setError(message)
       } else {
-        setError('Unable to run the analysis. Please try again later.')
+        throw err
       }
     } finally {
       setLoadingA(false)
@@ -53,10 +55,11 @@ export default function App() {
       const out = computeHistogram(points)
       setHist(out)
     } catch (err) {
-      if (err?.message === REQUEST_TIMEOUT_MESSAGE) {
-        setError(REQUEST_TIMEOUT_MESSAGE)
+      const message = resolveErrorMessage(err)
+      if (message) {
+        setError(message)
       } else {
-        setError('Unable to run the analysis. Please try again later.')
+        throw err
       }
     } finally {
       setLoadingB(false)

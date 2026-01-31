@@ -1,10 +1,11 @@
 import { round4 } from './math'
 import { buildHistogram, median, mode, stdDev, coefVar } from './math'
+import { REQUEST_TIMEOUT_MESSAGE } from './errorHandling'
 
 const MAX_DAYS_PER_REQUEST = 93
 const NBP_BASE = 'https://api.nbp.pl/api'
 const REQUEST_TIMEOUT_MS = 30000
-export const REQUEST_TIMEOUT_MESSAGE = 'Request timeout'
+export { REQUEST_TIMEOUT_MESSAGE }
 
 function addDays(yyyyMmDd, days) {
   const d = new Date(yyyyMmDd + 'T00:00:00')
