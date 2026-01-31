@@ -1,8 +1,11 @@
 import { round4 } from './math'
 import { buildHistogram, median, mode, stdDev, coefVar } from './math'
+import { REQUEST_TIMEOUT_MESSAGE } from './errorHandling'
 
 const MAX_DAYS_PER_REQUEST = 93
 const NBP_BASE = 'https://api.nbp.pl/api'
+const REQUEST_TIMEOUT_MS = 30000
+export { REQUEST_TIMEOUT_MESSAGE }
 
 function addDays(yyyyMmDd, days) {
   const d = new Date(yyyyMmDd + 'T00:00:00')
@@ -23,18 +26,25 @@ function daysBetween(a, b) {
   return Math.floor((db - da) / (1000 * 60 * 60 * 24))
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { headers: { Accept: 'application/json' } })
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(`NBP ${res.status} ${text}`)
+async function fetchJson(url, signal) {
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal })
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      throw new Error(`NBP ${res.status} ${text}`)
+    }
+    return res.json()
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw new Error(REQUEST_TIMEOUT_MESSAGE)
+    }
+    throw err
   }
-  return res.json()
 }
 
-async function fetchMidRatesChunk(code, start, end) {
+async function fetchMidRatesChunk(code, start, end, signal) {
   const url = `${NBP_BASE}/exchangerates/rates/a/${code}/${start}/${end}/?format=json`
-  const json = await fetchJson(url)
+  const json = await fetchJson(url, signal)
 
   const rates = (json?.rates || []).map(r => ({
     date: r.effectiveDate,
@@ -44,7 +54,7 @@ async function fetchMidRatesChunk(code, start, end) {
   return rates
 }
 
-async function fetchMidRatesRange(code, start, end) {
+async function fetchMidRatesRange(code, start, end, signal) {
   if (code === 'PLN') return []
 
   const out = []
@@ -56,7 +66,7 @@ async function fetchMidRatesRange(code, start, end) {
       return maxEnd < end ? maxEnd : end
     })()
 
-    const chunk = await fetchMidRatesChunk(code.toLowerCase(), curStart, chunkEnd)
+    const chunk = await fetchMidRatesChunk(code.toLowerCase(), curStart, chunkEnd, signal)
     out.push(...chunk)
 
     curStart = addDays(chunkEnd, 1)
@@ -69,43 +79,50 @@ export async function realSeries({ from, to, base, quote }) {
   const needBase = base !== 'PLN'
   const needQuote = quote !== 'PLN'
 
-  const [basePln, quotePln] = await Promise.all([
-    needBase ? fetchMidRatesRange(base, from, to) : Promise.resolve([]),
-    needQuote ? fetchMidRatesRange(quote, from, to) : Promise.resolve([]),
-  ])
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
-  const mapBase = new Map(basePln.map(p => [p.date, p.rate]))
-  const mapQuote = new Map(quotePln.map(p => [p.date, p.rate]))
+  try {
+    const [basePln, quotePln] = await Promise.all([
+      needBase ? fetchMidRatesRange(base, from, to, controller.signal) : Promise.resolve([]),
+      needQuote ? fetchMidRatesRange(quote, from, to, controller.signal) : Promise.resolve([]),
+    ])
 
-  let dates = []
+    const mapBase = new Map(basePln.map(p => [p.date, p.rate]))
+    const mapQuote = new Map(quotePln.map(p => [p.date, p.rate]))
 
-  if (base === 'PLN' && quote !== 'PLN') {
-    dates = [...mapQuote.keys()].sort()
-  } else if (base !== 'PLN' && quote === 'PLN') {
-    dates = [...mapBase.keys()].sort()
-  } else if (base !== 'PLN' && quote !== 'PLN') {
-    dates = [...mapBase.keys()].filter(d => mapQuote.has(d)).sort()
-  } else {
-    const n = Math.max(0, daysBetween(from, to))
-    dates = Array.from({ length: n + 1 }, (_, i) => addDays(from, i))
-  }
+    let dates = []
 
-  const points = dates.map(date => {
-    let rate
     if (base === 'PLN' && quote !== 'PLN') {
-      rate = round4(1 / mapQuote.get(date))
+      dates = [...mapQuote.keys()].sort()
     } else if (base !== 'PLN' && quote === 'PLN') {
-      rate = mapBase.get(date)
+      dates = [...mapBase.keys()].sort()
     } else if (base !== 'PLN' && quote !== 'PLN') {
-      rate = round4(mapBase.get(date) / mapQuote.get(date))
+      dates = [...mapBase.keys()].filter(d => mapQuote.has(d)).sort()
     } else {
-      rate = 1
+      const n = Math.max(0, daysBetween(from, to))
+      dates = Array.from({ length: n + 1 }, (_, i) => addDays(from, i))
     }
 
-    return { date, rate: round4(rate) }
-  })
+    const points = dates.map(date => {
+      let rate
+      if (base === 'PLN' && quote !== 'PLN') {
+        rate = round4(1 / mapQuote.get(date))
+      } else if (base !== 'PLN' && quote === 'PLN') {
+        rate = mapBase.get(date)
+      } else if (base !== 'PLN' && quote !== 'PLN') {
+        rate = round4(mapBase.get(date) / mapQuote.get(date))
+      } else {
+        rate = 1
+      }
 
-  return points
+      return { date, rate: round4(rate) }
+    })
+
+    return points
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 
