@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mode, stdDev, to4 } from '../lib/math'
+import { mode, stdDev, to4, median} from '../lib/math'
 
 describe('to4 rounding', () => {
   it('rounds down at 5th decimal below 5', () => {
