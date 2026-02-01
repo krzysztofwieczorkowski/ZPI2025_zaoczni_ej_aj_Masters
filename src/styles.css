@@ -43,7 +43,6 @@ body {
   min-width: 600px;
   overflow: auto;
 }
-
 @media (max-width: 900px) {
   .top-panel {
     grid-template-columns: 1fr;
@@ -51,10 +50,6 @@ body {
 
   .panel-left,
   .panel-right {
-    min-width: 100%;
-  }
-
-  .bottom-panel {
     min-width: 100%;
   }
 }
