@@ -37,7 +37,7 @@ export default function HistogramChart({ bins, ticks, height = 360 }) {
 
                     <ReferenceLine x={0} />
 
-                    {/* Set bars to white with a subtle border for contrast on light backgrounds */}
+                    {/* Set bars to white with a subtle border for contrast on dark card backgrounds */}
                     <Bar dataKey="count" isAnimationActive={false} activeBar={null} fill="#ffffff" stroke="#cccccc" />
                 </BarChart>
             </ResponsiveContainer>
