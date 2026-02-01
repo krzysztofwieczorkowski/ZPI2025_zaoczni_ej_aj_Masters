@@ -7,6 +7,7 @@ import {
     XAxis,
     YAxis,
     ReferenceLine,
+    Label,
 } from 'recharts'
 
 export default function HistogramChart({ bins, ticks, height = 360 }) {
@@ -26,9 +27,13 @@ export default function HistogramChart({ bins, ticks, height = 360 }) {
                         domain={['dataMin', 'dataMax']}
                         ticks={ticks}
                         tickFormatter={(v) => Number(v).toFixed(4)}
-                    />
+                    >
+                        <Label value="Daily Rate Change" position="insideBottom" offset={-10} />
+                    </XAxis>
 
-                    <YAxis />
+                    <YAxis>
+                        <Label value="Number of Days" angle={-90} position="insideLeft" />
+                    </YAxis>
 
                     <ReferenceLine x={0} />
 
