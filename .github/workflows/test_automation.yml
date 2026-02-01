@@ -30,6 +30,24 @@ jobs:
         run: npx vitest run --passWithNoTests --coverage
         #To be changed, if tests will not be included in package.json
 
+      - name: If tests fail, send email to the tester
+        if: failure()
+        uses: dawidd6/action-send-mail@v8
+        with:
+          server_address: smtp.poczta.onet.pl
+          server_port: 465
+          secure: true
+          username: ${{vars.EMAIL}}
+          password: ${{secrets.EMAIL_PASSWORD}}
+          subject: 'Build Failed: ${{ github.repository }}'
+          body: |
+            Job ${{ github.job }} in workflow ${{ github.workflow }} has failed.
+            Repository: ${{ github.repository }}
+            Triggered by: ${{ github.actor }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: 246311@edu.p.lodz.pl
+          from: ej-aj-masters@op.pl
+
       - name: Run build
         run: npm run build
 
