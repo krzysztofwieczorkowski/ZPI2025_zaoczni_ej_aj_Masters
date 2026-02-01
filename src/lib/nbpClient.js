@@ -154,8 +154,3 @@ export function computeHistogram(points) {
 
   return buildHistogram(deltas, 12)
 }
-
-export function mockSeries({ from, to, base, quote }) {
-
-  return []
-}
