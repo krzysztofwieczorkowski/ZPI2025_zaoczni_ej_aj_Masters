@@ -45,8 +45,8 @@ jobs:
             Repository: ${{ github.repository }}
             Triggered by: ${{ github.actor }}
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          to: 246311@edu.p.lodz.pl
-          from: ej-aj-masters@op.pl
+          to: ${{vars.TESTER_EMAIL}}
+          from: ${{vars.EMAIL}}
 
       - name: Run build
         run: npm run build
