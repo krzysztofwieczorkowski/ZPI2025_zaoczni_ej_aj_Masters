@@ -30,6 +30,9 @@ jobs:
         run: npx vitest run --passWithNoTests
         #To be changed, if tests will not be included in package.json
 
+      - name: Run build
+        run: npm run build
+
         env:
           CI: true
       
