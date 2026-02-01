@@ -2,10 +2,10 @@ import React, { useMemo, useState } from 'react'
 import { CURRENCIES, PERIODS, GRANULARITIES } from './lib/constants'
 import { rangeFromPeriod, rangeForGranularity } from './lib/dateRange'
 import { to4 } from './lib/math'
-import { computeHistogram, computeSessionsAndStats, REQUEST_TIMEOUT_MESSAGE } from './lib/mockData'
+import { computeHistogram, computeSessionsAndStats, REQUEST_TIMEOUT_MESSAGE } from './lib/nbpClient'
 import { Readonly, Select } from './components/FormControls'
 import HistogramChart from './components/HistogramChart'
-import { realSeries } from './lib/mockData'
+import { realSeries } from './lib/nbpClient'
 import { resolveErrorMessage } from './lib/errorHandling'
 
 export default function App() {
@@ -69,8 +69,8 @@ export default function App() {
   return (
       <div className="app-layout">
         <div className="card app-header">
-          <h1>NBP currency spot exchange rate analysis system — mockup (React)</h1>
-          <div className="sub">This is a UI prototype. Data is fetched from the NBP API each time.</div>
+          <h1>NBP currency spot exchange rate analysis system</h1>
+          <div className="sub">Data is fetched from the NBP API each time.</div>
           {error && <div className="alert">{error}</div>}
         </div>
 
