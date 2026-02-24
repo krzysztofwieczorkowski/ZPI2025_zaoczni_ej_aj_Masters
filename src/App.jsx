@@ -17,6 +17,7 @@ export default function App() {
   const rangeA = useMemo(() => rangeFromPeriod(period), [period])
   const [loadingA, setLoadingA] = useState(false)
   const [resultA, setResultA] = useState(null)
+  const unitA = `${quoteA}/${baseA}`
 
   const [baseB, setBaseB] = useState('EUR')
   const [quoteB, setQuoteB] = useState('PLN')
@@ -134,10 +135,10 @@ export default function App() {
               <table className="table">
                 <thead>
                 <tr>
-                  <th>Median</th>
-                  <th>Mode</th>
-                  <th>Standard Deviation</th>
-                  <th>Variation Coefficient</th>
+                  <th>Median ({unitA})</th>
+                  <th>Mode ({unitA})</th>
+                  <th>Standard Deviation ({unitA})</th>
+                  <th>Variation Coefficient (unitless)</th>
                 </tr>
                 </thead>
                 <tbody>
