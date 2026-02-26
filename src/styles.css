@@ -1,0 +1,298 @@
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0b0d12;
+  color: #e9eef7;
+  overflow: hidden;
+}
+
+#root {
+  overflow: hidden;
+}
+
+.app-layout {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(300px, 1fr) auto;
+  gap: 16px;
+  padding: 24px;
+  overflow: auto;
+}
+
+.top-panel {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
+  gap: 16px;
+  min-height: 0;
+}
+
+.panel-left,
+.panel-right {
+  min-width: 300px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  min-height: 0;
+}
+
+.panel-left > .card,
+.panel-right > .card {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.bottom-panel {
+  min-width: 600px;
+  min-height: 300px;
+  overflow: visible;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 { font-size: 20px; margin: 0 0 10px; }
+.sub { opacity: .8; font-size: 12px; margin-bottom: 14px; line-height: 1.4; }
+
+.grid { display: grid; gap: 16px; }
+
+.card {
+  background: #131826;
+  border: 1px solid #26304a;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.22);
+}
+
+.headerRow {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.headerRow > div {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 0 8px 0;
+}
+
+.badge {
+  display:inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #2a3656;
+  font-size: 12px;
+  opacity:.9;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  margin-top: 12px;
+}
+
+label {
+  font-size: 12px;
+  opacity: .9;
+  display:block;
+  margin-bottom: 6px;
+}
+
+select, input {
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid #2a3656;
+  background: #0f1422;
+  color: #e9eef7;
+}
+
+button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a3656;
+  background: #1c2742;
+  color: #e9eef7;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+.alert {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #5a2a2a;
+  background:#2a1111;
+  color:#ffd7d7;
+  margin-bottom: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.table th, .table td {
+  border-bottom: 1px solid #26304a;
+  padding: 10px;
+  text-align: right;
+}
+
+.table th { opacity: .9; font-weight: 600; }
+.table th:first-child, .table td:first-child { text-align: left; }
+
+.panelGrid { display:grid; gap:16px; margin-top: 16px; }
+
+@media (min-width: 900px) {
+  .panelGrid { grid-template-columns: 1fr 1fr; }
+}
+
+.placeholder {
+  opacity: .8;
+  font-size: 13px;
+  padding: 12px;
+  border: 1px dashed #2a3656;
+  border-radius: 12px;
+}
+
+.smallNote { opacity: .75; font-size: 12px; margin-top: 8px; }
+
+@media (max-width: 950px) {
+  .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table th, .table td { white-space: nowrap; }
+}
+
+@media (max-height: 720px) {
+  .panel-left,
+  .panel-right,
+  .bottom-panel {
+    overflow: auto;
+  }
+
+  .panel-left > .card,
+  .panel-right > .card {
+    overflow: auto;
+  }
+}
+
+@media (max-width: 600px) and (max-height: 600px) {
+  body { font-size: 12px; }
+
+  .app-layout {
+    height: 600px;
+    width: 600px;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    grid-template-rows: 0px 300px 300px !important;
+  }
+
+  .app-header {
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .top-panel {
+    height: 300px !important;
+    width: 600px !important;
+    grid-template-columns: 300px 300px !important;
+    gap: 0 !important;
+  }
+
+  .panel-left,
+  .panel-right {
+    height: 300px !important;
+    width: 300px !important;
+    overflow: hidden !important;
+  }
+
+  .panel-left > .card,
+  .panel-right > .card {
+    overflow: auto !important;
+  }
+
+  .bottom-panel {
+    height: 300px !important;
+    width: 600px !important;
+    min-width: 600px !important;
+    overflow: auto !important;
+  }
+
+  .panel-left > .card::-webkit-scrollbar,
+  .panel-right > .card::-webkit-scrollbar,
+  .bottom-panel::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  .panel-left > .card,
+  .panel-right > .card,
+  .bottom-panel {
+    scrollbar-width: none;
+  }
+
+  .card { padding: 8px !important; border-radius: 12px !important; }
+  h1 { font-size: 14px !important; margin: 0 !important; }
+  .sub { display: none !important; }
+  .badge { font-size: 10px !important; padding: 1px 6px !important; }
+  .headerRow { gap: 6px !important; }
+  button { padding: 6px 8px !important; border-radius: 9px !important; font-size: 12px !important; }
+  label { font-size: 11px !important; margin-bottom: 4px !important; }
+  select, input { padding: 6px 8px !important; border-radius: 9px !important; font-size: 12px !important; }
+  .controls { margin-top: 6px !important; gap: 8px !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .table { display: block !important; width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .table th, .table td { padding: 6px 8px !important; font-size: 12px !important; white-space: nowrap !important; }
+  .smallNote { font-size: 11px !important; margin-top: 6px !important; }
+}
+.headerRow {
+  flex-wrap: nowrap;
+}
+
+.headerRow > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.headerRow > button {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
