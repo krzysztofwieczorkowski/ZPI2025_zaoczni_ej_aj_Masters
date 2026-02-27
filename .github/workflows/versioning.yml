@@ -30,16 +30,16 @@ jobs:
       - name: Generate tag
         id: version
         run: |
-          LAST_TAG=$(git tag --list "v2.*" --sort=-v:refname | head -n 1)
+          LAST_TAG=$(git tag --list "2.*" --sort=-v:refname | head -n 1)
           if [ -z "$LAST_TAG" ]; then
-            NEXT_TAG="v2.0.0"
+            NEXT_TAG="2.0.0"
           else
             BASE=${LAST_TAG#v}
             MAJOR=$(echo "$BASE" | cut -d. -f1)
             MINOR=$(echo "$BASE" | cut -d. -f2)
             PATCH=$(echo "$BASE" | cut -d. -f3)
             PATCH=$((PATCH + 1))
-            NEXT_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+            NEXT_TAG="${MAJOR}.${MINOR}.${PATCH}"
           fi
           echo "next_tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
 
@@ -47,28 +47,26 @@ jobs:
         run: |
           git tag "${{ steps.version.outputs.next_tag }}" "${GITHUB_SHA}"
           git push origin "${{ steps.version.outputs.next_tag }}"
+      outputs:
+        next_tag: ${{ steps.version.outputs.next_tag }}
 
   build-jar:
+    needs: tag-on-merge
+    tag: ${{ needs.tag-on-merge.outputs.next_tag }}
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'npm'
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'maven' 
-      - run: npm ci && npm run build 
-      - run: mvn clean package -DskipTests
-      - name: Attach JAR to Release
+      - run: npm ci
+      - run: npm run build 
+      - name: Attach to Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ github.ref_name }}  
-          artifacts: target/*.jar
+          tag: ${{ steps.version.outputs.next_tag }}
+          artifacts: dist/index.html
           token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true 
