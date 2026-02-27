@@ -1,12 +1,22 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { VitePluginSingleFile } from 'vite-plugin-singlefile'
+import { viteSingleFile  } from 'vite-plugin-singlefile'
 
 export default defineConfig({
-  plugins: [react(), VitePluginSingleFile()],
-  build: {
-    rollupOptions: {
-      output: { inlineDynamicImports: true }  // dla pełnej inlinizacji
+    base: './',
+    build: {
+        assetsDir: '',
+        sourcemap: false,
+        rollupOptions: {
+            output: {
+                inlineDynamicImports: true,
+                manualChunks: undefined
+            }
+        }
     },
-  server: { port: 5173 }
+    plugins: [
+        react(),
+        viteSingleFile()
+    ],
+    server: { port: 5173 }
 })
