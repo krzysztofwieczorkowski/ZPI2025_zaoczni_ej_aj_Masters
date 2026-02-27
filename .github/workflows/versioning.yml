@@ -47,3 +47,28 @@ jobs:
         run: |
           git tag "${{ steps.version.outputs.next_tag }}" "${GITHUB_SHA}"
           git push origin "${{ steps.version.outputs.next_tag }}"
+
+  build-jar:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven' 
+      - run: npm ci && npm run build 
+      - run: mvn clean package -DskipTests
+      - name: Attach JAR to Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ github.ref_name }}  
+          artifacts: target/*.jar
+          token: ${{ secrets.GITHUB_TOKEN }}
