@@ -47,12 +47,11 @@ jobs:
         run: |
           git tag "${{ steps.version.outputs.next_tag }}" "${GITHUB_SHA}"
           git push origin "${{ steps.version.outputs.next_tag }}"
-      outputs:
-        next_tag: ${{ steps.version.outputs.next_tag }}
+    outputs:
+      next_tag: ${{ steps.version.outputs.next_tag }}
 
   build-jar:
     needs: tag-on-merge
-    tag: ${{ needs.tag-on-merge.outputs.next_tag }}
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
@@ -62,11 +61,11 @@ jobs:
           node-version: '24'
           cache: 'npm'
       - run: npm ci
-      - run: npm run build 
+      - run: npm run build
       - name: Attach to Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.version.outputs.next_tag }}
+          tag: ${{ needs.tag-on-merge.outputs.next_tag }}
           artifacts: dist/index.html
           token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true 
+          allowUpdates: true
